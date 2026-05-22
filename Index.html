@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Fillet — Fine Dining, Zimbabwe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #C9A84C; --gold-light: #E8C97A; --gold-dark: #8A6A1F;
+      --black: #0A0A0A; --dark: #111111; --dark2: #1A1A1A; --dark3: #222222;
+      --cream: #F5F0E8; --cream2: #EDE5D4; --text: #D4C9B0; --muted: #8A7D65;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Montserrat', sans-serif; background: var(--black); color: var(--text); overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 2px; }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 28px 60px; transition: background 0.4s, padding 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(10,10,10,0.95); backdrop-filter: blur(12px);
+      padding: 18px 60px; border-bottom: 1px solid rgba(201,168,76,0.15);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 300;
+      letter-spacing: 0.3em; color: var(--gold); text-decoration: none; text-transform: uppercase;
+    }
+    .nav-logo span { font-style: italic; }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a {
+      font-size: 0.65rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--text); text-decoration: none; transition: color 0.3s; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+      height: 1px; background: var(--gold); transform: scaleX(0); transition: transform 0.3s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-reserve {
+      font-size: 0.62rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--black); background: var(--gold); padding: 10px 24px;
+      text-decoration: none; transition: background 0.3s;
+    }
+    .nav-reserve:hover { background: var(--gold-light); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; padding: 4px; cursor: pointer; }
+    .hamburger span { display: block; width: 24px; height: 1px; background: var(--gold); }
+    .mobile-nav {
+      position: fixed; inset: 0; background: var(--black); z-index: 200;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 30px; transform: translateX(-100%); transition: transform 0.4s ease;
+    }
+    .mobile-nav.open { transform: translateX(0); }
+    .mobile-nav a {
+      font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 300;
+      color: var(--cream); text-decoration: none; transition: color 0.3s;
+    }
+    .mobile-nav a:hover { color: var(--gold); }
+    .mobile-nav-close {
+      position: absolute; top: 30px; right: 30px;
+      background: none; border: none; color: var(--gold); font-size: 1.5rem; cursor: pointer;
+    }
+    .hero {
+      min-height: 100vh; position: relative;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 30% 60%, rgba(201,168,76,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.05) 0%, transparent 50%),
+        linear-gradient(180deg, var(--black) 0%, #0d0c09 100%);
+    }
+    .hero-content {
+      position: relative; z-index: 2; text-align: center; padding: 0 20px;
+      animation: heroFade 1.2s ease forwards; opacity: 0;
+    }
+    @keyframes heroFade { to { opacity: 1; } }
+    .hero-eyebrow {
+      font-size: 0.6rem; font-weight: 500; letter-spacing: 0.4em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 28px;
+      display: flex; align-items: center; justify-content: center; gap: 16px;
+    }
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--gold-dark);
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif; font-size: clamp(4rem, 12vw, 9rem);
+      font-weight: 300; line-height: 0.9; color: var(--cream); letter-spacing: -0.02em; margin-bottom: 12px;
+    }
+    .hero-title em { font-style: italic; color: var(--gold); display: block; }
+    .hero-subtitle {
+      font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 60px; margin-top: 20px;
+    }
+    .hero-cta-group { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      font-size: 0.62rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--black); background: var(--gold); padding: 16px 36px;
+      text-decoration: none; transition: background 0.3s;
+    }
+    .btn-primary:hover { background: var(--gold-light); }
+    .btn-outline {
+      font-size: 0.62rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); border: 1px solid var(--gold-dark); padding: 16px 36px;
+      text-decoration: none; transition: all 0.3s;
+    }
+    .btn-outline:hover { border-color: var(--gold); background: rgba(201,168,76,0.05); }
+    .hero-scroll {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .hero-scroll span { font-size: 0.5rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); }
+    .scroll-line { width: 1px; height: 50px; background: linear-gradient(180deg, var(--gold-dark), transparent); }
+    section { padding: 120px 0; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 60px; }
+    .section-label {
+      font-size: 0.55rem; font-weight: 600; letter-spacing: 0.4em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 14px;
+    }
+    .section-label::before { content: ''; width: 30px; height: 1px; background: var(--gold-dark); }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif; font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 300; line-height: 1.1; color: var(--cream); margin-bottom: 24px;
+    }
+    .section-title em { font-style: italic; color: var(--gold); }
+    .divider { width: 60px; height: 1px; background: linear-gradient(90deg, var(--gold-dark), transparent); margin: 40px 0; }
+    .about { background: var(--dark); }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .about-img-frame {
+      width: 100%; aspect-ratio: 3/4; background: var(--dark3); position: relative;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+    }
+    .about-img-frame::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(201,168,76,0.12) 0%, transparent 70%),
+        repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(201,168,76,0.03) 30px, rgba(201,168,76,0.03) 31px);
+    }
+    .about-img-icon { font-size: 5rem; opacity: 0.15; }
+    .about-corner { position: absolute; width: 30px; height: 30px; border-color: var(--gold-dark); border-style: solid; }
+    .about-corner.tl { top: -10px; left: -10px; border-width: 1px 0 0 1px; }
+    .about-corner.br { bottom: -10px; right: -10px; border-width: 0 1px 1px 0; }
+    .about-badge {
+      position: absolute; bottom: -20px; right: -20px; width: 100px; height: 100px;
+      background: var(--gold); display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .about-badge strong { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; color: var(--black); line-height: 1; }
+    .about-badge span { font-size: 0.45rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--black); opacity: 0.7; }
+    .about-text p { font-size: 0.9rem; font-weight: 300; line-height: 1.9; color: var(--muted); margin-bottom: 20px; }
+    .about-text p strong { color: var(--cream); font-weight: 400; }
+    .about-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 50px; border-top: 1px solid rgba(201,168,76,0.15); padding-top: 40px; }
+    .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.4rem; font-weight: 300; color: var(--gold); line-height: 1; }
+    .stat-label { font-size: 0.55rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+    .menu { background: var(--black); position: relative; overflow: hidden; }
+    .menu::before {
+      content: 'MENU'; position: absolute; font-family: 'Cormorant Garamond', serif;
+      font-size: 20vw; font-weight: 300; color: rgba(201,168,76,0.03);
+      top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; white-space: nowrap;
+    }
+    .menu-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 70px; }
+    .menu-tabs { display: flex; gap: 4px; border: 1px solid rgba(201,168,76,0.2); padding: 4px; }
+    .menu-tab {
+      font-size: 0.58rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--muted); padding: 10px 20px; border: none; background: none; cursor: pointer; transition: all 0.3s;
+    }
+    .menu-tab.active, .menu-tab:hover { background: var(--gold); color: var(--black); }
+    .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+    .menu-item {
+      background: var(--dark); padding: 36px 40px; display: flex; gap: 24px;
+      align-items: flex-start; transition: background 0.3s;
+    }
+    .menu-item:hover { background: #161616; }
+    .menu-number { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 300; color: var(--gold-dark); opacity: 0.6; flex-shrink: 0; margin-top: 2px; }
+    .menu-info { flex: 1; }
+    .menu-name { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 400; color: var(--cream); margin-bottom: 8px; }
+    .menu-desc { font-size: 0.72rem; font-weight: 300; color: var(--muted); line-height: 1.7; }
+    .menu-price { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; color: var(--gold); flex-shrink: 0; margin-top: 2px; }
+    .experience { background: linear-gradient(135deg, var(--dark) 0%, var(--dark2) 100%); }
+    .experience-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 70px; }
+    .exp-card { background: var(--black); padding: 50px 36px; position: relative; overflow: hidden; transition: transform 0.3s; }
+    .exp-card:hover { transform: translateY(-4px); }
+    .exp-icon { font-size: 2rem; margin-bottom: 28px; display: block; }
+    .exp-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 400; color: var(--cream); margin-bottom: 16px; }
+    .exp-text { font-size: 0.78rem; font-weight: 300; color: var(--muted); line-height: 1.8; }
+    .exp-num { position: absolute; bottom: 28px; right: 32px; font-family: 'Cormorant Garamond', serif; font-size: 4rem; font-weight: 300; color: rgba(201,168,76,0.05); line-height: 1; }
+    .gallery { background: var(--black); }
+    .gallery-grid { display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(3, 160px); gap: 3px; margin-top: 60px; }
+    .gallery-cell { background: var(--dark3); overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+    .g1 { grid-column: 1/6; grid-row: 1/3; background: radial-gradient(ellipse at center, rgba(201,168,76,0.15), var(--dark3)); }
+    .g2 { grid-column: 6/9; grid-row: 1/2; background: radial-gradient(ellipse at center, rgba(201,168,76,0.08), var(--dark3)); }
+    .g3 { grid-column: 9/13; grid-row: 1/3; background: radial-gradient(ellipse at center, rgba(201,168,76,0.12), var(--dark3)); }
+    .g4 { grid-column: 6/9; grid-row: 2/3; background: radial-gradient(ellipse at center, rgba(201,168,76,0.06), var(--dark3)); }
+    .g5 { grid-column: 1/5; grid-row: 3/4; background: radial-gradient(ellipse at center, rgba(201,168,76,0.1), var(--dark3)); }
+    .g6 { grid-column: 5/9; grid-row: 3/4; background: radial-gradient(ellipse at center, rgba(201,168,76,0.08), var(--dark3)); }
+    .g7 { grid-column: 9/13; grid-row: 3/4; background: radial-gradient(ellipse at center, rgba(201,168,76,0.06), var(--dark3)); }
+    .gallery-label { font-size: 0.5rem; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(201,168,76,0.4); text-align: center; }
+    .info { background: var(--dark); }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+    .hours-list { margin-top: 40px; }
+    .hour-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid rgba(201,168,76,0.1); }
+    .hour-row:first-child { border-top: 1px solid rgba(201,168,76,0.1); }
+    .hour-day { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; color: var(--cream); }
+    .hour-time { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--gold); }
+    .contact-details { margin-top: 40px; }
+    .contact-item { display: flex; align-items: flex-start; gap: 20px; padding: 22px 0; border-bottom: 1px solid rgba(201,168,76,0.1); }
+    .contact-item:first-child { border-top: 1px solid rgba(201,168,76,0.1); }
+    .contact-icon { width: 36px; height: 36px; border: 1px solid var(--gold-dark); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.85rem; }
+    .contact-label { font-size: 0.5rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .contact-value { font-size: 0.9rem; font-weight: 300; color: var(--cream); }
+    .contact-value a { color: inherit; text-decoration: none; transition: color 0.3s; }
+    .contact-value a:hover { color: var(--gold); }
+    .reservation { background: linear-gradient(180deg, var(--black) 0%, #080700 100%); text-align: center; position: relative; overflow: hidden; }
+    .reservation::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(201,168,76,0.06) 0%, transparent 70%); }
+    .res-ornament { width: 1px; height: 80px; background: linear-gradient(180deg, transparent, var(--gold-dark), transparent); margin: 0 auto 50px; }
+    .res-text { font-size: 0.8rem; font-weight: 300; color: var(--muted); line-height: 1.9; max-width: 500px; margin: 0 auto 50px; }
+    .res-form { display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 3px; max-width: 900px; margin: 0 auto; }
+    .res-input { background: rgba(201,168,76,0.05); border: 1px solid rgba(201,168,76,0.15); color: var(--cream); font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 300; padding: 18px 20px; outline: none; transition: border-color 0.3s; width: 100%; }
+    .res-input:focus { border-color: var(--gold-dark); }
+    .res-input::placeholder { color: var(--muted); }
+    .res-btn { background: var(--gold); color: var(--black); border: none; font-family: 'Montserrat', sans-serif; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; padding: 18px 30px; cursor: pointer; transition: background 0.3s; white-space: nowrap; }
+    .res-btn:hover { background: var(--gold-light); }
+    .res-note { font-size: 0.6rem; color: var(--muted); margin-top: 20px; }
+    footer { background: var(--black); border-top: 1px solid rgba(201,168,76,0.12); padding: 60px 0 40px; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 30px; }
+    .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 300; letter-spacing: 0.3em; color: var(--gold); text-transform: uppercase; }
+    .footer-links { display: flex; gap: 30px; flex-wrap: wrap; }
+    .footer-links a { font-size: 0.55rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.3s; }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-copy { font-size: 0.55rem; color: var(--muted); letter-spacing: 0.1em; width: 100%; text-align: center; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.04); margin-top: 30px; }
+    .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    @media (max-width: 900px) {
+      nav { padding: 24px 30px; }
+      nav.scrolled { padding: 16px 30px; }
+      .container { padding: 0 30px; }
+      .nav-links, .nav-reserve { display: none; }
+      .hamburger { display: flex; }
+      .about-grid, .info-grid { grid-template-columns: 1fr; gap: 50px; }
+      .about-badge { display: none; }
+      .menu-grid { grid-template-columns: 1fr; }
+      .experience-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .g1,.g2,.g3,.g4,.g5,.g6,.g7 { grid-column: auto; grid-row: auto; height: 130px; }
+      .res-form { grid-template-columns: 1fr; }
+      .res-btn { width: 100%; padding: 18px; }
+      .menu-header { flex-direction: column; align-items: flex-start; gap: 30px; }
+      section { padding: 80px 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-nav-close" id="mobileClose">✕</button>
+  <a href="#about" onclick="closeMobileNav()">About</a>
+  <a href="#menu" onclick="closeMobileNav()">Menu</a>
+  <a href="#experience" onclick="closeMobileNav()">Experience</a>
+  <a href="#gallery" onclick="closeMobileNav()">Gallery</a>
+  <a href="#contact" onclick="closeMobileNav()">Contact</a>
+  <a href="#reservation" onclick="closeMobileNav()" style="color:var(--gold)">Reserve</a>
+</div>
+
+<nav id="navbar">
+  <a href="#" class="nav-logo">The <span>Fillet</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#reservation" class="nav-reserve">Reserve a Table</a>
+  <button class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Fine Dining · Zimbabwe</div>
+    <h1 class="hero-title">The<br><em>Fillet</em></h1>
+    <p class="hero-subtitle">Outland Road · Open Daily 07:00 – 21:00</p>
+    <div class="hero-cta-group">
+      <a href="#reservation" class="btn-primary">Reserve a Table</a>
+      <a href="#menu" class="btn-outline">View Menu</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-visual fade-up">
+        <div class="about-img-frame">
+          <div class="about-corner tl"></div>
+          <div class="about-corner br"></div>
+          <span class="about-img-icon">🥩</span>
+        </div>
+        <div class="about-badge"><strong>07</strong><span>Days a Week</span></div>
+      </div>
+      <div class="about-text fade-up">
+        <div class="section-label">Our Story</div>
+        <h2 class="section-title">Where <em>craft</em><br>meets flavour</h2>
+        <div class="divider"></div>
+        <p>At <strong>The Fillet</strong>, we believe that a great meal is more than sustenance — it is ceremony. Located on Outland Road, Zimbabwe, we bring the timeless art of premium steakhouse dining to life in every cut, every flame, every plate.</p>
+        <p>Our kitchen sources only the finest local and regional produce, working with <strong>trusted suppliers</strong> to deliver cuts of exceptional quality.</p>
+        <p>Whether you arrive for breakfast, lunch, or a memorable dinner, we are open to welcome you <strong>every single day</strong>, from 7 in the morning until 9 in the evening.</p>
+        <div class="about-stats">
+          <div><div class="stat-num">14+</div><div class="stat-label">Signature Cuts</div></div>
+          <div><div class="stat-num">07</div><div class="stat-label">Days Open</div></div>
+          <div><div class="stat-num">5★</div><div class="stat-label">Local Favourite</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="menu" id="menu">
+  <div class="container">
+    <div class="menu-header">
+      <div>
+        <div class="section-label">Signature Dishes</div>
+        <h2 class="section-title">Our <em>Finest</em> Offerings</h2>
+      </div>
+      <div class="menu-tabs">
+        <button class="menu-tab active">Mains</button>
+        <button class="menu-tab">Starters</button>
+        <button class="menu-tab">Desserts</button>
+      </div>
+    </div>
+    <div class="menu-grid fade-up">
+      <div class="menu-item"><span class="menu-number">01</span><div class="menu-info"><div class="menu-name">Prime Fillet Steak</div><div class="menu-desc">Our signature 300g grain-fed fillet, seared over charcoal with herb butter, roasted garlic, and a red wine jus.</div></div><span class="menu-price">$28</span></div>
+      <div class="menu-item"><span class="menu-number">02</span><div class="menu-info"><div class="menu-name">Ribeye Royale</div><div class="menu-desc">Aged 28-day ribeye with caramelised onion compote, hand-cut chips, and chimichurri drizzle.</div></div><span class="menu-price">$32</span></div>
+      <div class="menu-item"><span class="menu-number">03</span><div class="menu-info"><div class="menu-name">Surf & Turf</div><div class="menu-desc">Fillet medallion paired with tiger prawns in garlic cream, served with seasonal vegetables and fondant potato.</div></div><span class="menu-price">$38</span></div>
+      <div class="menu-item"><span class="menu-number">04</span><div class="menu-info"><div class="menu-name">T-Bone Grand</div><div class="menu-desc">Impressive 500g T-bone, dry-rubbed with our house spice blend, charred to perfection with bone marrow butter.</div></div><span class="menu-price">$42</span></div>
+      <div class="menu-item"><span class="menu-number">05</span><div class="menu-info"><div class="menu-name">Pan-Seared Salmon</div><div class="menu-desc">Atlantic salmon with lemon caper beurre blanc, wilted spinach, and roasted cherry tomatoes.</div></div><span class="menu-price">$22</span></div>
+      <div class="menu-item"><span class="menu-number">06</span><div class="menu-info"><div class="menu-name">The Fillet Burger</div><div class="menu-desc">Wagyu beef patty with aged cheddar, caramelised onion, house-made pickles, and truffle aioli on brioche.</div></div><span class="menu-price">$18</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="experience" id="experience">
+  <div class="container">
+    <div class="section-label fade-up">Why Choose Us</div>
+    <h2 class="section-title fade-up">An <em>experience</em> unlike any other</h2>
+    <div class="experience-grid">
+      <div class="exp-card fade-up"><span class="exp-icon">🔥</span><div class="exp-title">Live Fire Cooking</div><p class="exp-text">Every steak is cooked over live charcoal flames by our master grill chefs, delivering that irreplaceable caramelised crust and smoky depth of flavour.</p><div class="exp-num">01</div></div>
+      <div class="exp-card fade-up"><span class="exp-icon">🍷</span><div class="exp-title">Curated Cellar</div><p class="exp-text">Our sommelier-selected wine list pairs exquisitely with every course, from bold South African Shiraz to elegant French Bordeaux.</p><div class="exp-num">02</div></div>
+      <div class="exp-card fade-up"><span class="exp-icon">✨</span><div class="exp-title">Intimate Ambiance</div><p class="exp-text">Warm lighting, rich textures, and considered music create an atmosphere perfect for a romantic dinner or a celebration among friends.</p><div class="exp-num">03</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="gallery" id="gallery">
+  <div class="container">
+    <div class="section-label fade-up">Our Space</div>
+    <h2 class="section-title fade-up">Inside <em>The Fillet</em></h2>
+    <div class="gallery-grid fade-up">
+      <div class="gallery-cell g1"><span class="gallery-label">Main Dining Hall</span></div>
+      <div class="gallery-cell g2"><span class="gallery-label">The Grill</span></div>
+      <div class="gallery-cell g3"><span class="gallery-label">Outdoor Terrace</span></div>
+      <div class="gallery-cell g4"><span class="gallery-label">Chef's Table</span></div>
+      <div class="gallery-cell g5"><span class="gallery-label">Signature Cuts</span></div>
+      <div class="gallery-cell g6"><span class="gallery-label">Wine Cellar</span></div>
+      <div class="gallery-cell g7"><span class="gallery-label">Private Dining</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="info" id="contact">
+  <div class="container">
+    <div class="info-grid">
+      <div class="fade-up">
+        <div class="section-label">Opening Hours</div>
+        <h2 class="section-title">We're <em>open</em> every day</h2>
+        <div class="hours-list">
+          <div class="hour-row"><span class="hour-day">Monday – Sunday</span><span class="hour-time">07:00 – 21:00</span></div>
+          <div class="hour-row"><span class="hour-day">Breakfast</span><span class="hour-time">07:00 – 10:30</span></div>
+          <div class="hour-row"><span class="hour-day">Lunch</span><span class="hour-time">11:00 – 15:00</span></div>
+          <div class="hour-row"><span class="hour-day">Dinner</span><span class="hour-time">17:00 – 21:00</span></div>
+          <div class="hour-row"><span class="hour-day">Public Holidays</span><span class="hour-time">08:00 – 20:00</span></div>
+        </div>
+      </div>
+      <div class="fade-up">
+        <div class="section-label">Find Us</div>
+        <h2 class="section-title">Get in <em>touch</em></h2>
+        <div class="contact-details">
+          <div class="contact-item"><div class="contact-icon">📍</div><div><div class="contact-label">Address</div><div class="contact-value">Outland Road, Zimbabwe</div></div></div>
+          <div class="contact-item"><div class="contact-icon">📞</div><div><div class="contact-label">Phone</div><div class="contact-value"><a href="tel:+263774257577">+263 774 257 577</a></div></div></div>
+          <div class="contact-item"><div class="contact-icon">✉️</div><div><div class="contact-label">Email</div><div class="contact-value"><a href="mailto:hello@thefillet.co.zw">hello@thefillet.co.zw</a></div></div></div>
+          <div class="contact-item"><div class="contact-icon">📱</div><div><div class="contact-label">Social</div><div class="contact-value">@thefilletrestaurant</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reservation" id="reservation">
+  <div class="container">
+    <div class="res-ornament"></div>
+    <div class="section-label" style="justify-content:center">Book a Table</div>
+    <h2 class="section-title fade-up">Make a <em>Reservation</em></h2>
+    <p class="res-text fade-up">Join us for an unforgettable dining experience. Reserve your table online or call us on +263 774 257 577.</p>
+    <div class="res-form fade-up">
+      <input type="text" class="res-input" placeholder="Full Name" />
+      <input type="date" class="res-input" />
+      <input type="text" class="res-input" placeholder="Number of Guests" />
+      <button class="res-btn">Reserve</button>
+    </div>
+    <p class="res-note">For large groups or private events, please call us directly.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">The <em style="font-style:italic">Fillet</em></div>
+      <div class="footer-links">
+        <a href="#about">About</a>
+        <a href="#menu">Menu</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#contact">Contact</a>
+        <a href="#reservation">Reserve</a>
+      </div>
+      <div style="font-size:0.7rem;color:var(--muted)">+263 774 257 577</div>
+    </div>
+    <div class="footer-copy">© 2026 The Fillet Restaurant · Outland Road, Zimbabwe · All rights reserved</div>
+  </div>
+</footer>
+
+<script>
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobileNav').classList.add('open');
+  });
+  document.getElementById('mobileClose').addEventListener('click', closeMobileNav);
+  function closeMobileNav() {
+    document.getElementById('mobileNav').classList.remove('open');
+  }
+  document.querySelectorAll('.menu-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  document.querySelector('.res-btn').addEventListener('click', () => {
+    const inputs = document.querySelectorAll('.res-input');
+    const name = inputs[0].value.trim();
+    const date = inputs[1].value;
+    const guests = inputs[2].value.trim();
+    if (name && date && guests) {
+      alert('Thank you, ' + name + '! Your reservation for ' + guests + ' guest(s) on ' + date + ' has been received. We will confirm by phone shortly.');
+      inputs.forEach(i => i.value = '');
+    } else {
+      alert('Please fill in all fields to complete your reservation.');
+    }
+  });
+</script>
+</body>
+</html>
